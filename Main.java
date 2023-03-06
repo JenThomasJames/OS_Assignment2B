@@ -6,11 +6,14 @@ public class Main {
 
     public static void main(String[] args) {
         int choice = 0;
+        ReadyQueue readyQueue = ReadyQueue.getInstance();
         do {
             choice = showMenu();
             switch (choice) {
                 case 1:
-                    System.out.println("Creating process...");
+                    Process process = createProcess();
+                    readyQueue.add(process);
+                    System.out.println("New Process Created with ID " + process.getId());
                     break;
 
                 case 2:
@@ -47,5 +50,18 @@ public class Main {
         System.out.println("Choice: ");
         int choice = scan.nextInt();
         return choice;
+    }
+
+    public static Process createProcess() {
+        System.out.println("Enter Priority: ");
+        int priority = scan.nextInt();
+        System.out.println("Enter CPU Burst Time: ");
+        int cpuBurstTime = scan.nextInt();
+        System.out.println("Enter IO Burst Time: ");
+        int ioBurstTime = scan.nextInt();
+        System.out.println("Enter Execution Time: ");
+        int executionTime = scan.nextInt();
+        Process process = new Process(processId++, priority, cpuBurstTime, ioBurstTime, executionTime);
+        return process;
     }
 }
