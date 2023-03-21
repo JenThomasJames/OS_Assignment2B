@@ -5,23 +5,30 @@ public class Main {
     public static int processId = 0;
 
     public static void main(String[] args) {
+        Scheduler scheduler = new Scheduler();
         int choice = 0;
-        ReadyQueue readyQueue = ReadyQueue.getInstance();
         do {
             choice = showMenu();
             switch (choice) {
                 case 1:
                     Process process = createProcess();
-                    readyQueue.add(process);
+                    scheduler.addProcessToReadyQueue(process);
                     System.out.println("New Process Created with ID " + process.getId());
                     break;
 
                 case 2:
-                    System.out.println("Terminating process...");
+                    System.out.println("Enter the ID of the process to terminate: ");
+                    int processId = scan.nextInt();
+                    boolean isDeleted = scheduler.interruptProcess(processId);
+                    if (isDeleted) {
+                        System.out.println("Deleted Process Created with ID " + processId);
+                    } else {
+                        System.out.println("Couldn't find any process with ID " + processId);
+                    }
                     break;
 
                 case 3:
-                    System.out.println("Displaying System Status...");
+                    scheduler.printStatus();
                     break;
 
                 case 4:
@@ -61,7 +68,7 @@ public class Main {
         int ioBurstTime = scan.nextInt();
         System.out.println("Enter Execution Time: ");
         int executionTime = scan.nextInt();
-        Process process = new Process(processId++, priority, cpuBurstTime, ioBurstTime, executionTime);
+        Process process = new Process(++processId, priority, cpuBurstTime, ioBurstTime, executionTime);
         return process;
     }
 }

@@ -1,23 +1,27 @@
-public class Process {
+public class Process implements Runnable {
     private int id;
     private int priority;
     private int cpuBurstTime;
     private int ioBurstTime;
     private int executionTime;
     private int remainingCPUTime;
-    private int remainingIOTime;
+    private int totalTimeTaken;
+    private IOQueue ioQueue;
+    private ReadyQueue readyQueue;
 
     public Process() {
     }
 
     public Process(int id, int priority, int cpuBurstTime, int ioBurstTime, int executionTime) {
+        this.ioQueue = IOQueue.getInstance();
+        this.readyQueue = ReadyQueue.getInstance();
         this.id = id;
         this.priority = priority;
         this.cpuBurstTime = cpuBurstTime;
         this.ioBurstTime = ioBurstTime;
         this.executionTime = executionTime;
-        this.remainingCPUTime = cpuBurstTime;
-        this.remainingIOTime = ioBurstTime;
+        this.remainingCPUTime = executionTime;
+        this.totalTimeTaken = 0;
     }
 
     public int getId() {
@@ -60,7 +64,61 @@ public class Process {
         return this.remainingCPUTime;
     }
 
-    public int getRemainingIOTime() {
-        return this.remainingIOTime;
+    public void setRemainingCPUTime(int remainingCPUTime) {
+        this.remainingCPUTime = remainingCPUTime;
+    }
+
+    public int getTotalTimeTaken() {
+        return this.totalTimeTaken;
+    }
+
+    public void start() {
+        Thread thread = new Thread(this);
+        thread.start();
+    }
+
+    public void interrupt() {
+        this.interrupt();
+    }
+
+    @Override
+    public void run() {
+        if (this.executionTime == -1) {
+            while (true) {
+                for (int i = 0; i < this.cpuBurstTime; i++) {
+                    try {
+                        Thread.sleep(ioBurstTime * 60000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    totalTimeTaken++;
+                }
+                try {
+                    if (ioBurstTime != 0) {
+                        readyQueue.remove(this);
+                        ioQueue.add(this);
+                        Thread.sleep(ioBurstTime * 1000);
+                        ioBurstTime = 0;
+                        readyQueue.add(this);
+                        ioQueue.remove(this);
+                    }
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } else {
+            while (executionTime != 0) {
+                for (int i = 0; i < this.cpuBurstTime; i++) {
+                    totalTimeTaken++;
+                    this.executionTime--;
+                }
+                try {
+                    Thread.sleep(ioBurstTime * 1000);
+                    ioBurstTime = 0;
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
     }
 }

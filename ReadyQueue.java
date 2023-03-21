@@ -32,4 +32,8 @@ public class ReadyQueue {
     public boolean isEmpty() {
         return readyQueue.isEmpty();
     }
+
+    public Process poll() {
+        return readyQueue.poll();
+    }
 }

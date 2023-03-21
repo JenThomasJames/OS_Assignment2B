@@ -1,4 +1,5 @@
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -31,5 +32,13 @@ public class IOQueue {
 
     public boolean isEmpty() {
         return ioQueue.isEmpty();
+    }
+
+    public Iterator<Process> iterator() {
+        return ioQueue.iterator();
+    }
+
+    public Process poll() {
+        return ioQueue.poll();
     }
 }
